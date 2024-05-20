@@ -46,3 +46,33 @@ class LinkedList:
             tasks.append(current.data)
             current = current.next
         return tasks
+
+
+
+class Stack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, action):
+        self.stack.append(action)
+
+    def pop(self):
+        if not self.is_empty():
+            return self.stack.pop()
+        return None
+
+    def is_empty(self):
+        return len(self.stack) == 0
+
+class HashTable:
+    def __init__(self):
+        self.table = {}
+
+    def add(self, key, value):
+        if key not in self.table:
+            self.table[key] = []
+        self.table[key].append(value)
+
+    def search(self, key):
+        return self.table.get(key, [])
+
