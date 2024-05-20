@@ -155,3 +155,59 @@ class TaskManager:
             self.tasks.add(task)
         self.save_tasks()
 
+
+
+def banner():
+    print("Task Manager")
+    print("Press 1 to add tasks")
+    print("Press 2 to view tasks")
+    print("Press 3 to edit tasks")
+    print("Press 4 to delete tasks")
+    print("Press 5 to search tasks")
+    print("Press 6 to undo last action")
+    print("Press 7 to end program")
+
+
+def controls():
+    task_manager = TaskManager()
+
+    while True:
+        banner()
+        try:
+            user_input = int(input("Choose a prompt: "))
+            if user_input == 1:
+                task = input("Enter a task: ")
+                tag = input("Enter a tag: ")
+                task_manager.add_task(task, tag)
+                print("Task added successfully.")
+            elif user_input == 2:
+                task_manager.view_tasks()
+            elif user_input == 3:
+                task_manager.view_tasks()
+                index = int(input("Enter the number of the task to edit: "))
+                new_task = input("Enter new task to replace with: ")
+                new_tag = input("Enter new tag: ")
+                task_manager.edit_task(index, new_task, new_tag)
+                print("Task edited successfully.")
+            elif user_input == 4:
+                task_manager.view_tasks()
+                index = int(input("Enter the number of the task to delete: "))
+                task_manager.delete_task(index)
+                print("Task deleted successfully.")
+            elif user_input == 5:
+                tag = input("Enter a tag to search: ")
+                task_manager.search_task(tag)
+            elif user_input == 6:
+                task_manager.undo()
+                print("Last action undone.")
+            elif user_input == 7:
+                break
+            else:
+                print("Invalid option. Please choose a number between 1 and 7.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+
+controls()
+
+
