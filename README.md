@@ -1,11 +1,7 @@
-import json
-
-
 class Node:
     def __init__(self, data=None):
         self.data = data
         self.next = None
-
 
 class LinkedList:
     def __init__(self):
@@ -52,6 +48,7 @@ class LinkedList:
         return tasks
 
 
+
 class Stack:
     def __init__(self):
         self.stack = []
@@ -67,7 +64,6 @@ class Stack:
     def is_empty(self):
         return len(self.stack) == 0
 
-
 class HashTable:
     def __init__(self):
         self.table = {}
@@ -80,6 +76,9 @@ class HashTable:
     def search(self, key):
         return self.table.get(key, [])
 
+
+
+import json
 
 class TaskManager:
     def __init__(self):
@@ -96,16 +95,10 @@ class TaskManager:
     def load_tasks(self):
         try:
             with open('tasks.json', 'r') as file:
-                try:
-                    tasks = json.load(file)
-                    for task in tasks:
-                        self.tasks.add(task)
-                        ##was giving me error to run program with empty JSON file so I added this
-                except json.JSONDecodeError:
-                    print("JSON empty")
-                    tasks = []
+                tasks = json.load(file)
+                for task in tasks:
+                    self.tasks.add(task)
         except FileNotFoundError:
-
             pass
 
     def add_task(self, task, tag):
@@ -162,6 +155,8 @@ class TaskManager:
             self.tasks.add(task)
         self.save_tasks()
 
+
+
 def banner():
     print("Task Manager")
     print("Press 1 to add tasks")
@@ -171,6 +166,7 @@ def banner():
     print("Press 5 to search tasks")
     print("Press 6 to undo last action")
     print("Press 7 to end program")
+
 
 def controls():
     task_manager = TaskManager()
@@ -210,5 +206,6 @@ def controls():
                 print("Invalid option. Please choose a number between 1 and 7.")
         except ValueError:
             print("Please enter a valid number.")
+
 
 controls()
