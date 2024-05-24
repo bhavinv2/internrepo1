@@ -75,10 +75,11 @@ Task Manager
 - Press `5` to search for tasks by tag.
 - Press `6` to undo the last action.
 - Press `7` to exit the program.
+  
 Choose a prompt: 1
-Enter a task: Complete project documentation
-Enter a tag: work
-Task added successfully.
+- Enter a task: Complete project documentation
+- Enter a tag: work
+- Task added successfully.
 
 
 ## Requirements
