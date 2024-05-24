@@ -1,211 +1,101 @@
-class Node:
-    def __init__(self, data=None):
-        self.data = data
-        self.next = None
+# Task Manager
 
-class LinkedList:
-    def __init__(self):
-        self.head = None
+## Overview
 
-    def add(self, data):
-        new_node = Node(data)
-        if not self.head:
-            self.head = new_node
-        else:
-            current = self.head
-            while current.next:
-                current = current.next
-            current.next = new_node
+The Task Manager is a simple console-based application designed to help you manage tasks efficiently. It supports adding, viewing, editing, deleting, searching, and undoing tasks. Tasks can be tagged for easy searching, and all tasks are saved to a file for persistence between sessions.
 
-    def delete(self, index):
-        if not self.head:
-            return
-        if index == 0:
-            self.head = self.head.next
-            return
-        current = self.head
-        for i in range(index - 1):
-            if not current.next:
-                return
-            current = current.next
-        if current.next:
-            current.next = current.next.next
+## Features
 
-    def edit(self, index, new_data):
-        current = self.head
-        for i in range(index):
-            if not current.next:
-                return
-            current = current.next
-        current.data = new_data
+- **Add Tasks**: Add new tasks with tags.
+- **View Tasks**: View all tasks in a list.
+- **Edit Tasks**: Edit existing tasks by specifying the task number.
+- **Delete Tasks**: Delete tasks by specifying the task number.
+- **Search Tasks**: Search for tasks by tags.
+- **Undo Actions**: Undo the last action performed.
+- **Persistent Storage**: Tasks are saved to a JSON file to retain data between sessions.
 
-    def traverse(self):
-        tasks = []
-        current = self.head
-        while current:
-            tasks.append(current.data)
-            current = current.next
-        return tasks
+## Components
 
+### LinkedList
 
+A singly linked list implementation for managing tasks.
 
-class Stack:
-    def __init__(self):
-        self.stack = []
+- **Node Class**: Represents a single node in the linked list.
+- **LinkedList Class**: Manages the linked list with methods to add, delete, edit, and traverse nodes.
 
-    def push(self, action):
-        self.stack.append(action)
+### Stack
 
-    def pop(self):
-        if not self.is_empty():
-            return self.stack.pop()
-        return None
+A stack implementation used for undo functionality.
 
-    def is_empty(self):
-        return len(self.stack) == 0
+- **Stack Class**: Provides push, pop, and is_empty methods.
 
-class HashTable:
-    def __init__(self):
-        self.table = {}
+### HashTable
 
-    def add(self, key, value):
-        if key not in self.table:
-            self.table[key] = []
-        self.table[key].append(value)
+A hash table implementation for tagging and searching tasks.
 
-    def search(self, key):
-        return self.table.get(key, [])
+- **HashTable Class**: Manages a dictionary to store tasks by tags.
 
+### TaskManager
 
+The main class that integrates LinkedList, Stack, and HashTable to manage tasks.
 
-import json
+- **add_task**: Adds a task with a tag.
+- **view_tasks**: Displays all tasks.
+- **edit_task**: Edits a specified task.
+- **delete_task**: Deletes a specified task.
+- **search_task**: Searches for tasks by tag.
+- **undo**: Undoes the last action.
+- **save_tasks**: Saves tasks to a JSON file.
+- **load_tasks**: Loads tasks from a JSON file.
 
-class TaskManager:
-    def __init__(self):
-        self.tasks = LinkedList()
-        self.undo_stack = Stack()
-        self.hash_table = HashTable()
-        self.load_tasks()
+### Controls
 
-    def save_tasks(self):
-        tasks = self.tasks.traverse()
-        with open('tasks.json', 'w') as file:
-            json.dump(tasks, file)
+A function to manage user inputs and interactions with the TaskManager.
 
-    def load_tasks(self):
-        try:
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
-                for task in tasks:
-                    self.tasks.add(task)
-        except FileNotFoundError:
-            pass
+## How to Use
 
-    def add_task(self, task, tag):
-        self.tasks.add(task)
-        self.hash_table.add(tag, task)
-        self.undo_stack.push(("add", task, tag))
-        self.save_tasks()
+1. **Run the Program**: Execute the script in a Python environment.
+2. **Follow Prompts**: The application will display a menu with options.
+3. **Choose an Option**:
+   - Press `1` to add a task.
+   - Press `2` to view tasks.
+   - Press `3` to edit a task.
+   - Press `4` to delete a task.
+   - Press `5` to search for tasks by tag.
+   - Press `6` to undo the last action.
+   - Press `7` to exit the program.
 
-    def view_tasks(self):
-        tasks = self.tasks.traverse()
-        if tasks:
-            for idx, task in enumerate(tasks, start=1):
-                print(f"{idx}: {task}")
-        else:
-            print("No tasks to view.")
+## Sample Interaction
 
-    def edit_task(self, index, new_task, new_tag):
-        old_task = self.tasks.traverse()[index - 1]
-        self.tasks.edit(index - 1, new_task)
-        self.undo_stack.push(("edit", index - 1, old_task, new_task, new_tag))
-        self.save_tasks()
-
-    def delete_task(self, index):
-        task = self.tasks.traverse()[index - 1]
-        self.tasks.delete(index - 1)
-        self.undo_stack.push(("delete", index - 1, task))
-        self.save_tasks()
-
-    def search_task(self, tag):
-        tasks = self.hash_table.search(tag)
-        if tasks:
-            print(f"Tasks with tag '{tag}':")
-            for task in tasks:
-                print(task)
-        else:
-            print(f"No tasks found with tag '{tag}'.")
-
-    def undo(self):
-        if self.undo_stack.is_empty():
-            print("No actions to undo.")
-            return
-        action = self.undo_stack.pop()
-        if action[0] == "add":
-            task = action[1]
-            tag = action[2]
-            self.tasks.delete(self.tasks.traverse().index(task))
-            self.hash_table.table[tag].remove(task)
-        elif action[0] == "edit":
-            index, old_task, new_task, new_tag = action[1:]
-            self.tasks.edit(index, old_task)
-            self.hash_table.table[new_tag].remove(new_task)
-        elif action[0] == "delete":
-            index, task = action[1:]
-            self.tasks.add(task)
-        self.save_tasks()
+Task Manager
+- Press `1` to add a task.
+- Press `2` to view tasks.
+- Press `3` to edit a task.
+- Press `4` to delete a task.
+- Press `5` to search for tasks by tag.
+- Press `6` to undo the last action.
+- Press `7` to exit the program.
+Choose a prompt: 1
+Enter a task: Complete project documentation
+Enter a tag: work
+Task added successfully.
 
 
+## Requirements
 
-def banner():
-    print("Task Manager")
-    print("Press 1 to add tasks")
-    print("Press 2 to view tasks")
-    print("Press 3 to edit tasks")
-    print("Press 4 to delete tasks")
-    print("Press 5 to search tasks")
-    print("Press 6 to undo last action")
-    print("Press 7 to end program")
+- Python 3.x
+- `json` module (standard library)
 
+## File Structure
 
-def controls():
-    task_manager = TaskManager()
+- `task_manager.py`: Main script file containing all classes and functions.
+- `tasks.json`: File where tasks are stored.
 
-    while True:
-        banner()
-        try:
-            user_input = int(input("Choose a prompt: "))
-            if user_input == 1:
-                task = input("Enter a task: ")
-                tag = input("Enter a tag: ")
-                task_manager.add_task(task, tag)
-                print("Task added successfully.")
-            elif user_input == 2:
-                task_manager.view_tasks()
-            elif user_input == 3:
-                task_manager.view_tasks()
-                index = int(input("Enter the number of the task to edit: "))
-                new_task = input("Enter new task to replace with: ")
-                new_tag = input("Enter new tag: ")
-                task_manager.edit_task(index, new_task, new_tag)
-                print("Task edited successfully.")
-            elif user_input == 4:
-                task_manager.view_tasks()
-                index = int(input("Enter the number of the task to delete: "))
-                task_manager.delete_task(index)
-                print("Task deleted successfully.")
-            elif user_input == 5:
-                tag = input("Enter a tag to search: ")
-                task_manager.search_task(tag)
-            elif user_input == 6:
-                task_manager.undo()
-                print("Last action undone.")
-            elif user_input == 7:
-                break
-            else:
-                print("Invalid option. Please choose a number between 1 and 7.")
-        except ValueError:
-            print("Please enter a valid number.")
+## Notes
 
+- Make sure to run the script in a directory where `tasks.json` can be created and accessed.
+- Ensure Python 3.x is installed on your system.
 
-controls()
+---
+
+This README provides a comprehensive guide to understanding, using, and extending the Task Manager application. Enjoy managing your tasks efficiently!
